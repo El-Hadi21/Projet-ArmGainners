@@ -191,14 +191,14 @@ end TCL_Generic;
     </comp>
     <comp lib="0" loc="(1160,570)" name="Tunnel">
       <a name="facing" val="east"/>
-      <a name="label" val="E"/>
+      <a name="label" val="En"/>
     </comp>
     <comp lib="0" loc="(1290,440)" name="Bit Extender">
       <a name="in_width" val="1"/>
       <a name="out_width" val="4"/>
     </comp>
     <comp lib="0" loc="(1380,740)" name="Tunnel">
-      <a name="label" val="MASK1110"/>
+      <a name="label" val="Update_NZC"/>
     </comp>
     <comp lib="0" loc="(160,80)" name="Pin">
       <a name="appearance" val="classic"/>
@@ -276,9 +276,8 @@ end TCL_Generic;
       <a name="value" val="0x9"/>
       <a name="width" val="4"/>
     </comp>
-    <comp lib="0" loc="(480,40)" name="Tunnel">
-      <a name="facing" val="north"/>
-      <a name="label" val="E"/>
+    <comp lib="0" loc="(480,50)" name="Tunnel">
+      <a name="label" val="En"/>
     </comp>
     <comp lib="0" loc="(590,1440)" name="Constant">
       <a name="value" val="0xf"/>
@@ -327,7 +326,7 @@ end TCL_Generic;
     </comp>
     <comp lib="0" loc="(70,20)" name="Tunnel">
       <a name="facing" val="east"/>
-      <a name="label" val="E"/>
+      <a name="label" val="En"/>
     </comp>
     <comp lib="0" loc="(740,540)" name="Constant">
       <a name="width" val="4"/>
@@ -341,7 +340,7 @@ end TCL_Generic;
     </comp>
     <comp lib="0" loc="(780,160)" name="Tunnel">
       <a name="facing" val="east"/>
-      <a name="label" val="MASK1111"/>
+      <a name="label" val="Update_All_flags"/>
     </comp>
     <comp lib="0" loc="(780,20)" name="Bit Extender">
       <a name="in_width" val="1"/>
@@ -349,10 +348,10 @@ end TCL_Generic;
     </comp>
     <comp lib="0" loc="(780,290)" name="Tunnel">
       <a name="facing" val="east"/>
-      <a name="label" val="MASK1110"/>
+      <a name="label" val="Update_NZC"/>
     </comp>
     <comp lib="0" loc="(790,1160)" name="Tunnel">
-      <a name="label" val="MASK1100"/>
+      <a name="label" val="Update_NZ"/>
     </comp>
     <comp lib="0" loc="(840,210)" name="Constant">
       <a name="value" val="0xf"/>
@@ -360,10 +359,10 @@ end TCL_Generic;
     </comp>
     <comp lib="0" loc="(870,390)" name="Tunnel">
       <a name="facing" val="east"/>
-      <a name="label" val="MASK1100"/>
+      <a name="label" val="Update_NZ"/>
     </comp>
     <comp lib="0" loc="(880,850)" name="Tunnel">
-      <a name="label" val="MASK1111"/>
+      <a name="label" val="Update_All_flags"/>
     </comp>
     <comp lib="0" loc="(890,250)" name="Bit Extender">
       <a name="in_width" val="1"/>
@@ -453,26 +452,6 @@ end TCL_Generic;
     </comp>
     <comp lib="3" loc="(910,490)" name="Comparator">
       <a name="width" val="4"/>
-    </comp>
-    <comp lib="8" loc="(245,1880)" name="Text">
-      <a name="font" val="SansSerif plain 12"/>
-      <a name="text" val="Note 2: RSB instruction has Rn as 1st operand."/>
-    </comp>
-    <comp lib="8" loc="(430,1615)" name="Text">
-      <a name="font" val="SansSerif plain 12"/>
-      <a name="text" val="MUL instruction has Rn as 1st operand and Rdm as 2nd operand"/>
-    </comp>
-    <comp lib="8" loc="(575,45)" name="Text">
-      <a name="font" val="SansSerif plain 12"/>
-      <a name="text" val="Pull output low on Enable = 0"/>
-    </comp>
-    <comp lib="8" loc="(610,1660)" name="Text">
-      <a name="font" val="SansSerif plain 12"/>
-      <a name="text" val="Note: instructions that does not save the result will still have the second operand as the destination register, the ALU will copy the second register to the destination register"/>
-    </comp>
-    <comp lib="8" loc="(620,1495)" name="Text">
-      <a name="font" val="SansSerif plain 12"/>
-      <a name="text" val="For simplification purposes, Rm is used for 1st operand both here and in the ALU."/>
     </comp>
     <wire from="(1000,350)" to="(1010,350)"/>
     <wire from="(1010,200)" to="(1010,350)"/>
@@ -584,7 +563,7 @@ end TCL_Generic;
     <wire from="(380,1140)" to="(380,1180)"/>
     <wire from="(380,1180)" to="(570,1180)"/>
     <wire from="(380,40)" to="(380,50)"/>
-    <wire from="(380,50)" to="(470,50)"/>
+    <wire from="(380,50)" to="(480,50)"/>
     <wire from="(380,970)" to="(380,1000)"/>
     <wire from="(390,1200)" to="(390,1240)"/>
     <wire from="(390,1240)" to="(650,1240)"/>
@@ -611,8 +590,6 @@ end TCL_Generic;
     <wire from="(460,850)" to="(590,850)"/>
     <wire from="(460,910)" to="(560,910)"/>
     <wire from="(460,970)" to="(620,970)"/>
-    <wire from="(470,40)" to="(470,50)"/>
-    <wire from="(470,40)" to="(480,40)"/>
     <wire from="(500,110)" to="(500,120)"/>
     <wire from="(500,120)" to="(600,120)"/>
     <wire from="(500,90)" to="(500,110)"/>
