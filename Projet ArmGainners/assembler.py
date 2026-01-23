@@ -7,12 +7,31 @@ class PARMAssembler:
         self.registers = {f'r{i}': i for i in range(8)}
         self.registers['sp'] = 13
         
+    def is_label_line(self, line):
+        stripped = line.strip()
+        if ':' in stripped:
+            label_part = stripped.split(':')[0]
+            return not any(c in label_part for c in [' ', '\t', ',', '#', '[', ']'])
+        return False
+    
+    def is_directive(self, line):
+        stripped = line.strip()
+        if not stripped.startswith('.'):
+            return False
+        if ':' in stripped:
+            return False
+        return True
+    
     def clean_line(self, line):
         line = re.sub(r'[@].*$', '', line)
-        if line.strip().startswith('.'):
+        line = re.sub(r'//.*$', '', line)
+        
+        if self.is_directive(line):
             return ''
+        
         if re.match(r'\s*(push|add\s+r7\s*,\s*sp)', line, re.IGNORECASE):
             return ''
+        
         return line.strip()
     
     def parse_register(self, reg_str):
@@ -152,7 +171,7 @@ class PARMAssembler:
         raise ValueError(f"Unknown SP instruction: {mnemonic}")
     
     def encode_branch(self, mnemonic, operands, labels, current_addr):
-        label = operands[0]
+        label = operands[0].strip()
         
         if label not in labels:
             raise ValueError(f"Undefined label: {label}")
@@ -188,10 +207,10 @@ class PARMAssembler:
             if not clean:
                 continue
             
-            if ':' in clean:
-                label_name = clean.split(':')[0].strip()
-                labels[label_name] = addr
-                clean = clean.split(':', 1)[1].strip()
+            if self.is_label_line(clean):
+                label_part = clean.split(':')[0].strip()
+                labels[label_part] = addr
+                clean = clean.split(':', 1)[1].strip() if ':' in clean else ''
                 if not clean:
                     continue
             
@@ -203,12 +222,17 @@ class PARMAssembler:
             if not clean:
                 continue
             
-            if ':' in clean:
-                clean = clean.split(':', 1)[1].strip()
+            if self.is_label_line(clean):
+                clean = clean.split(':', 1)[1].strip() if ':' in clean else ''
                 if not clean:
                     continue
             
-            parts = re.split(r'[\s,]+', clean)
+            parts = re.split(r'[\s,\t]+', clean)
+            parts = [p for p in parts if p]
+            
+            if not parts:
+                continue
+            
             mnemonic = parts[0].upper()
             operands = [p.strip() for p in parts[1:] if p.strip()]
             
@@ -217,14 +241,14 @@ class PARMAssembler:
                     encoded = self.encode_branch(mnemonic, operands, labels, addr)
                 elif mnemonic in ['STR', 'LDR']:
                     encoded = self.encode_load_store(mnemonic, operands)
-                elif mnemonic in ['ADD', 'SUB'] and any('sp' in op.lower() for op in [mnemonic] + operands):
+                elif mnemonic in ['ADD', 'SUB'] and len(operands) > 0 and any('sp' in op.lower() for op in operands):
                     encoded = self.encode_sp_address(mnemonic, operands)
                 elif mnemonic in ['ANDS', 'EORS', 'ADCS', 'SBCS', 'RORS', 
                                  'TST', 'RSBS', 'CMN', 'ORRS', 'MULS', 'BICS', 'MVNS']:
                     encoded = self.encode_data_processing(mnemonic, operands)
                 elif mnemonic in ['LSLS', 'LSRS', 'ASRS'] and len(operands) == 2:
                     encoded = self.encode_data_processing(mnemonic, operands)
-                elif mnemonic == 'CMP' and not operands[1].startswith('#'):
+                elif mnemonic == 'CMP' and len(operands) >= 2 and not operands[1].startswith('#'):
                     encoded = self.encode_data_processing(mnemonic, operands)
                 else:
                     encoded = self.encode_shift_add_sub_mov(mnemonic, operands)
@@ -247,7 +271,7 @@ class PARMAssembler:
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python assembler.py input.s [output.bin]")
+        print("Usage: python3 assembler.py input.s [output.bin]")
         sys.exit(1)
     
     input_file = sys.argv[1]

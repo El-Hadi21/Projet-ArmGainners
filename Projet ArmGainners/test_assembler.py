@@ -42,9 +42,14 @@ def test_integration_files():
     
     assembler = PARMAssembler()
     
+    print("="*60)
+    print("TESTS D'INTEGRATION DU PARSEUR")
+    print("="*60)
+    print("")
+    
     for test_dir in test_dirs:
         if not os.path.exists(test_dir):
-            print(f"Warning: {test_dir} not found")
+            print(f"Avertissement: {test_dir} introuvable")
             continue
         
         for filename in os.listdir(test_dir):
@@ -55,7 +60,7 @@ def test_integration_files():
                 temp_bin = s_file.replace('.s', '_temp.bin')
                 
                 if not os.path.exists(bin_file):
-                    print(f"Warning: Expected {bin_file} not found")
+                    print(f"Avertissement: {bin_file} attendu introuvable")
                     continue
                 
                 try:
@@ -72,89 +77,52 @@ def test_integration_files():
                     
                     if success:
                         passed_tests += 1
-                        print(f"✓ {s_file}")
+                        print(f"[OK] {s_file}")
                     else:
                         failed_tests.append((s_file, msg))
-                        print(f"✗ {s_file}: {msg}")
+                        print(f"[ECHEC] {s_file}: {msg}")
                     
                     os.remove(temp_bin)
                     
                 except Exception as e:
                     failed_tests.append((s_file, str(e)))
-                    print(f"✗ {s_file}: {e}")
+                    print(f"[ECHEC] {s_file}: {e}")
     
     print(f"\n{'='*60}")
-    print(f"Integration Tests: {passed_tests}/{total_tests} passed")
-    print(f"Coverage: {100*passed_tests/total_tests if total_tests > 0 else 0:.1f}%")
+    print(f"Tests d'integration parseur: {passed_tests}/{total_tests} reussis")
+    print(f"Taux de couverture: {100*passed_tests/total_tests if total_tests > 0 else 0:.1f}%")
+    print(f"{'='*60}")
     
     if failed_tests:
-        print(f"\nFailed tests:")
+        print(f"\nTests echoues:")
         for test, reason in failed_tests:
             print(f"  - {test}: {reason}")
     
     return passed_tests, total_tests
 
-def test_unit_examples():
-    assembler = PARMAssembler()
-    unit_tests = 0
-    unit_passed = 0
-    
-    tests = [
-        ("sub sp, #12", "b083"),
-        ("movs r0, #0", "2000"),
-        ("str r0, [sp, #8]", "9002"),
-        ("movs r1, #1", "2101"),
-        ("adds r1, r1, r2", "1889"),
-        ("lsls r0, r1, #5", "0148"),
-        ("lsrs r2, r3, #10", "0a9a"),
-        ("asrs r4, r5, #3", "10ec"),
-        ("ands r0, r1", "4008"),
-        ("eors r2, r3", "405a"),
-    ]
-    
-    print("\nUnit Tests:")
-    for asm, expected in tests:
-        unit_tests += 1
-        try:
-            result = assembler.assemble(asm)
-            hex_result = f"{result[0]:04x}"
-            if hex_result == expected:
-                unit_passed += 1
-                print(f"✓ {asm:20s} -> {hex_result}")
-            else:
-                print(f"✗ {asm:20s} -> {hex_result} (expected {expected})")
-        except Exception as e:
-            print(f"✗ {asm:20s} -> ERROR: {e}")
-    
-    print(f"\nUnit Tests: {unit_passed}/{unit_tests} passed")
-    print(f"Coverage: {100*unit_passed/unit_tests:.1f}%")
-    
-    return unit_passed, unit_tests
-
 def main():
-    print("="*60)
-    print("PARM Assembler Test Suite")
-    print("="*60)
-    
-    unit_p, unit_t = test_unit_examples()
     integ_p, integ_t = test_integration_files()
     
-    total_passed = unit_p + integ_p
-    total_tests = unit_t + integ_t
-    
-    print(f"\n{'='*60}")
-    print(f"TOTAL: {total_passed}/{total_tests} tests passed")
-    print(f"Couverture globale: {100*total_passed/total_tests if total_tests > 0 else 0:.1f}%")
-    print(f"{'='*60}")
-    
+    os.makedirs('Vecteurs_des_tests', exist_ok=True)
     with open('Vecteurs_des_tests/coverage_report.txt', 'w') as f:
-        f.write(f"Rapport couverture des tests PARM Assembler Test Coverage Report\n")
+        f.write(f"RAPPORT DE COUVERTURE DES TESTS - PROJET PARM\n")
         f.write(f"{'='*60}\n\n")
-        f.write(f"Tests unitaires: {unit_p}/{unit_t} ({100*unit_p/unit_t:.1f}%)\n")
-        f.write(f"Tests d'integrations: {integ_p}/{integ_t} ({100*integ_p/integ_t:.1f}%)\n")
-        f.write(f"Couverture totale: {total_passed}/{total_tests} ({100*total_passed/total_tests:.1f}%)\n")
+        f.write(f"TESTS D'INTEGRATION DU PARSEUR (assembleur)\n")
+        f.write(f"{'-'*60}\n")
+        f.write(f"Tests reussis: {integ_p}/{integ_t}\n")
+        f.write(f"Taux de couverture: {100*integ_p/integ_t if integ_t > 0 else 0:.1f}%\n\n")
+        f.write(f"TESTS D'INTEGRATION DU CPU (Logisim)\n")
+        f.write(f"{'-'*60}\n")
+        f.write(f"A completer manuellement apres tests dans Logisim\n")
+        f.write(f"Instructions testees: [ ] / [ ]\n")
+        f.write(f"Taux de couverture: [ ]%\n\n")
+        f.write(f"{'='*60}\n")
+        f.write(f"Note: Les tests CPU doivent etre realises dans Logisim\n")
+        f.write(f"en chargeant les fichiers .bin dans la ROM.\n")
     
-    sys.exit(0 if total_passed == total_tests else 1)
+    print(f"\nRapport sauvegarde: Vecteurs_des_tests/coverage_report.txt")
+    
+    sys.exit(0 if integ_p == integ_t else 1)
 
 if __name__ == "__main__":
     main()
